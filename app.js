@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 })
 // Discover the OIDC Provider's Configuration
 const issuer = await Issuer.discover(process.env.SSO_URL);
+console.info(`Discovered issuer ${process.env.SSO_URL}`);
 // Create a Client Instance
 const client = new issuer.Client({
     client_id: process.env.clientId,
@@ -38,7 +39,7 @@ app.get('/request/login', async (req, res) => {
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
     });
-
+    console.info(authorizationUrl);
     // Redirect the user to the authorization URL
     res.redirect(authorizationUrl);
 })

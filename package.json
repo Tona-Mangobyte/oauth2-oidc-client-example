@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "restart": "systemctl restart roomth-testing.service"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
