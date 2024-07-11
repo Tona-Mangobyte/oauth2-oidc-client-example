@@ -5,7 +5,7 @@ import { Issuer, generators } from 'openid-client';
 import 'dotenv/config';
 
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3000;
 
 // Convert URL to path for __dirname equivalent
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
