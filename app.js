@@ -42,9 +42,13 @@ app.get('/request/login', async (req, res) => {
     console.info(authorizationUrl);
     // Redirect the user to the authorization URL
     res.redirect(authorizationUrl);
+    // res.redirect('http://34.146.165.124:286/oidc/auth?client_id=roomth&scope=openid%20profile%20email%20name&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A9091%2Fcallback&response_mode=query&code_challenge=UFXxsANC_ZyghTr8CBZBPYRBR-Rsr0qqwdrU1h4j07Q&code_challenge_method=S256');
 })
 
 app.get('/callback', async (req, res) => {
+    if (req.query.error) {
+        res.render('callback', { userinfo: req.query.error})
+    }
     const params = client.callbackParams(req);
     const tokenSet = await client.callback(process.env.redirectUri, params, { code_verifier: codeVerifier });
     const userinfo = await client.userinfo(tokenSet);
