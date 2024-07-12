@@ -47,12 +47,26 @@ app.get('/request/login', async (req, res) => {
 
 app.get('/callback', async (req, res) => {
     if (req.query.error) {
-        res.render('callback', { userinfo: req.query.error})
+        res.render('callback', { userinfo: req.query.error});
+        return;
     }
-    const params = client.callbackParams(req);
-    const tokenSet = await client.callback(process.env.redirectUri, params, { code_verifier: codeVerifier });
-    const userinfo = await client.userinfo(tokenSet);
-    res.render('callback', { userinfo: JSON.stringify(userinfo) })
+    try {
+        // Extract the authorization code and other params from the query
+        const params = client.callbackParams(req);
+        console.info(params);
+        // Exchange the authorization code for a token set
+        console.info(`Generated code verifier ${codeVerifier}`);
+        const tokenSet = await client.callback(process.env.redirectUri, params, { code_verifier: codeVerifier });
+        // Request userinfo with the obtained access token
+        const userinfo = await client.userinfo(tokenSet);
+        console.info(tokenSet);
+        // Render or process the userinfo
+        res.render('callback', { userinfo: JSON.stringify(userinfo) });
+    } catch (error) {
+        // Handle exceptions, such as network errors or invalid responses
+        console.error('Error handling callback:', error);
+        res.render('callback', { userinfo: 'An error occurred while fetching userinfo.' });
+    }
 })
 
 // Start the server
