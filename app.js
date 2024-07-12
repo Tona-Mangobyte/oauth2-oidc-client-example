@@ -39,10 +39,8 @@ app.get('/request/login', async (req, res) => {
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
     });
-    console.info(authorizationUrl);
     // Redirect the user to the authorization URL
     res.redirect(authorizationUrl);
-    // res.redirect('http://34.146.165.124:286/oidc/auth?client_id=roomth&scope=openid%20profile%20email%20name&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A9091%2Fcallback&response_mode=query&code_challenge=UFXxsANC_ZyghTr8CBZBPYRBR-Rsr0qqwdrU1h4j07Q&code_challenge_method=S256');
 })
 
 app.get('/callback', async (req, res) => {
@@ -53,9 +51,7 @@ app.get('/callback', async (req, res) => {
     try {
         // Extract the authorization code and other params from the query
         const params = client.callbackParams(req);
-        console.info(params);
         // Exchange the authorization code for a token set
-        console.info(`Generated code verifier ${codeVerifier}`);
         const tokenSet = await client.callback(process.env.redirectUri, params, { code_verifier: codeVerifier });
         // Request userinfo with the obtained access token
         const userinfo = await client.userinfo(tokenSet);
