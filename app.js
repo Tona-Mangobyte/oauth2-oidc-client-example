@@ -28,14 +28,13 @@ const client = new issuer.Client({
 });
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
+const codeChallenge = generators.codeChallenge(codeVerifier);
 app.get('/request/login', async (req, res) => {
-    const codeChallenge = generators.codeChallenge(codeVerifier);
 
     // Build the Authorization URL
     const authorizationUrl = client.authorizationUrl({
         scope: process.env.scopes,
         response_mode: 'query',
-        // nonce: generators.nonce(),
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
     });
