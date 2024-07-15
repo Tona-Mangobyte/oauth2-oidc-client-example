@@ -24,7 +24,6 @@ const client = new issuer.Client({
     client_secret: process.env.clientSecret,
     redirect_uris: [process.env.redirectUri],
     response_types: ['code'],
-    token_endpoint_auth_method: 'client_secret_basic',
 });
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
