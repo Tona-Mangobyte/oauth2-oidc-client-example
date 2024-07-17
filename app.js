@@ -27,6 +27,7 @@ const client = new issuer.Client({
 });
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
+console.log(`Generated code verifier: ${codeVerifier}`);
 const codeChallenge = generators.codeChallenge(codeVerifier);
 app.get('/request/login', async (req, res) => {
 
