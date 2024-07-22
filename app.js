@@ -27,7 +27,6 @@ const client = new issuer.Client({
 });
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
-console.log(`Generated code verifier: ${codeVerifier}`);
 const codeChallenge = generators.codeChallenge(codeVerifier);
 app.get('/request/login', async (req, res) => {
 
@@ -62,6 +61,14 @@ app.get('/callback', async (req, res) => {
         console.error('Error handling callback:', error);
         res.render('callback', { userinfo: 'An error occurred while fetching userinfo.' });
     }
+})
+
+app.get('/authorization-code', async (req, res) => {
+    if (req.query.error) {
+        res.render('code', { code: req.query.error});
+        return;
+    }
+    res.render('code', { code: req.query.code});
 })
 
 // Start the server
