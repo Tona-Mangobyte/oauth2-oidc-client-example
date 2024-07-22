@@ -63,7 +63,7 @@ app.get('/callback', async (req, res) => {
     }
 })
 
-app.get('/authorization-code', async (req, res) => {
+app.get('/callback-code', async (req, res) => {
     if (req.query.error) {
         res.render('code', { code: req.query.error});
         return;
