@@ -29,7 +29,7 @@ const client = new issuer.Client({
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
 const codeChallenge = generators.codeChallenge(codeVerifier);
-app.get(`${PREFIX}/request/login`, async (req, res) => {
+app.get(`/request/login`, async (req, res) => {
 
     // Build the Authorization URL
     const authorizationUrl = client.authorizationUrl({
@@ -42,7 +42,7 @@ app.get(`${PREFIX}/request/login`, async (req, res) => {
     res.redirect(authorizationUrl);
 })
 
-app.get(`${PREFIX}/callback`, async (req, res) => {
+app.get(`/callback`, async (req, res) => {
     if (req.query.error) {
         res.render('callback', { userinfo: req.query.error});
         return;
@@ -64,7 +64,7 @@ app.get(`${PREFIX}/callback`, async (req, res) => {
     }
 })
 
-app.get(`${PREFIX}/callback-code`, async (req, res) => {
+app.get(`/callback-code`, async (req, res) => {
     if (req.query.error) {
         res.render('code', { code: req.query.error});
         return;
