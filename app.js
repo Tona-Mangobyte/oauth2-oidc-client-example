@@ -6,6 +6,7 @@ import 'dotenv/config';
 
 const app = express()
 const PORT = process.env.PORT || 3000;
+const PREFIX = process.env.PREFIX || '';
 
 // Convert URL to path for __dirname equivalent
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -28,7 +29,7 @@ const client = new issuer.Client({
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
 const codeChallenge = generators.codeChallenge(codeVerifier);
-app.get('/request/login', async (req, res) => {
+app.get(`${PREFIX}/request/login`, async (req, res) => {
 
     // Build the Authorization URL
     const authorizationUrl = client.authorizationUrl({
@@ -41,7 +42,7 @@ app.get('/request/login', async (req, res) => {
     res.redirect(authorizationUrl);
 })
 
-app.get('/callback', async (req, res) => {
+app.get(`${PREFIX}/callback`, async (req, res) => {
     if (req.query.error) {
         res.render('callback', { userinfo: req.query.error});
         return;
