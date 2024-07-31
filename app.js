@@ -64,7 +64,7 @@ app.get(`${PREFIX}/callback`, async (req, res) => {
     }
 })
 
-app.get('/callback-code', async (req, res) => {
+app.get(`${PREFIX}/callback-code`, async (req, res) => {
     if (req.query.error) {
         res.render('code', { code: req.query.error});
         return;
