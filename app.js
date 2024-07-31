@@ -14,7 +14,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
-    res.render('login')
+    res.render('login', { prefix: PREFIX})
 })
 // Discover the OIDC Provider's Configuration
 const issuer = await Issuer.discover(process.env.SSO_URL);
@@ -29,7 +29,7 @@ const client = new issuer.Client({
 // Generate Code Verifier and Challenge for PKCE (Optional)
 const codeVerifier = generators.codeVerifier();
 const codeChallenge = generators.codeChallenge(codeVerifier);
-app.get(`${PREFIX}/request/login`, async (req, res) => {
+app.get('/request/login', async (req, res) => {
 
     // Build the Authorization URL
     const authorizationUrl = client.authorizationUrl({
@@ -42,7 +42,7 @@ app.get(`${PREFIX}/request/login`, async (req, res) => {
     res.redirect(authorizationUrl);
 })
 
-app.get(`${PREFIX}/callback`, async (req, res) => {
+app.get('/callback', async (req, res) => {
     if (req.query.error) {
         res.render('callback', { userinfo: req.query.error});
         return;
