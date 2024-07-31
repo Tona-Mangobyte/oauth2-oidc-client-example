@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
-    "restart": "systemctl restart roomth-testing.service"
+    "restart": "systemctl restart roomth-testing.service",
+    "restart-stg": "systemctl restart roomth-stg-testing.service"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
