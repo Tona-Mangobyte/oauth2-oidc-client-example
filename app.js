@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
     res.render('login', { prefix: PREFIX})
 })
 
-// Generate Code Verifier and Challenge for PKCE (Optional)
+// Generate Code Verifier and Challenge for PKCE
 const codeVerifier = "ZNLNUFZNHOKx8VYDG5cTyob0VqB6a8YFqnbNmFqq5Cw";
 const codeChallenge = "ahY8rbMTtgmDoqjTmSq1T1sUjTIEpDL7acbfoZXkVcI";
 app.get(`/request/login`, async (req, res) => {
@@ -35,8 +35,6 @@ app.get(`/request/login`, async (req, res) => {
     };
     // Generate the Authorization URL
     const authorizationUrl = `${authorizationEndpoint}?${new URLSearchParams(params).toString()}`;
-    // Log the Authorization URL
-    console.log(`Authorization URL: ${authorizationUrl}`);
 
     // Redirect the user to the authorization URL
     res.redirect(authorizationUrl);
