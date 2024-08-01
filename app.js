@@ -1,7 +1,7 @@
 import express from 'express';
 import * as path from "node:path";
+import axios from 'axios';
 import { fileURLToPath } from 'url';
-import { Issuer, generators } from 'openid-client';
 import 'dotenv/config';
 
 const app = express()
@@ -16,28 +16,28 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
     res.render('login', { prefix: PREFIX})
 })
-// Discover the OIDC Provider's Configuration
-const issuer = await Issuer.discover(process.env.SSO_URL);
-console.info(`Discovered issuer ${process.env.SSO_URL}`);
-// Create a Client Instance
-const client = new issuer.Client({
-    client_id: process.env.clientId,
-    client_secret: process.env.clientSecret,
-    redirect_uris: [process.env.redirectUri],
-    response_types: ['code'],
-});
+
 // Generate Code Verifier and Challenge for PKCE (Optional)
-const codeVerifier = generators.codeVerifier();
-const codeChallenge = generators.codeChallenge(codeVerifier);
+const codeVerifier = "ZNLNUFZNHOKx8VYDG5cTyob0VqB6a8YFqnbNmFqq5Cw";
+const codeChallenge = "ahY8rbMTtgmDoqjTmSq1T1sUjTIEpDL7acbfoZXkVcI";
 app.get(`/request/login`, async (req, res) => {
 
     // Build the Authorization URL
-    const authorizationUrl = client.authorizationUrl({
+    // Define the Authorization Endpoint and Query Parameters
+    const authorizationEndpoint = `${process.env.SSO_URL}/auth`;
+    const params = {
+        client_id: process.env.clientId,
+        redirect_uri: process.env.redirectUri,
+        response_type: 'code',
         scope: process.env.scopes,
-        response_mode: 'query',
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
-    });
+    };
+    // Generate the Authorization URL
+    const authorizationUrl = `${authorizationEndpoint}?${new URLSearchParams(params).toString()}`;
+    // Log the Authorization URL
+    console.log(`Authorization URL: ${authorizationUrl}`);
+
     // Redirect the user to the authorization URL
     res.redirect(authorizationUrl);
 })
@@ -48,15 +48,31 @@ app.get(`/callback`, async (req, res) => {
         return;
     }
     try {
-        // Extract the authorization code and other params from the query
-        const params = client.callbackParams(req);
-        // Exchange the authorization code for a token set
-        const tokenSet = await client.callback(process.env.redirectUri, params, { code_verifier: codeVerifier });
-        // Request userinfo with the obtained access token
-        const userinfo = await client.userinfo(tokenSet);
-        console.info(tokenSet);
+        // Define the token endpoint and request parameters
+        const tokenEndpoint = `${process.env.SSO_URL}/token`;
+        const params = new URLSearchParams({
+            client_id: process.env.clientId,
+            client_secret: process.env.clientSecret,
+            code: req.query.code,
+            redirect_uri: process.env.redirectUri,
+            grant_type: 'authorization_code',
+            code_verifier: codeVerifier,
+        });
+        // Make the token request using axios
+        const response = await axios.post(tokenEndpoint, params.toString(), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        });
+
+        // Optionally, request userinfo with the obtained access token
+        const userinfo = await axios.get(`${process.env.SSO_URL}/me`, {
+            headers: {
+                Authorization: `Bearer ${response.data.access_token}`,
+            },
+        });
         // Render or process the userinfo
-        res.render('callback', { userinfo: JSON.stringify(userinfo) });
+        res.render('callback', { userinfo: JSON.stringify(userinfo.data) });
     } catch (error) {
         // Handle exceptions, such as network errors or invalid responses
         console.error('Error handling callback:', error);
@@ -64,6 +80,7 @@ app.get(`/callback`, async (req, res) => {
     }
 })
 
+// it's use for doc https://github.com/mango-byte/roomth-sso?tab=readme-ov-file#-single-sign-on-sso
 app.get(`/callback-code`, async (req, res) => {
     if (req.query.error) {
         res.render('code', { code: req.query.error});
