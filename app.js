@@ -20,9 +20,10 @@ app.get('/', (req, res) => {
 // Generate Code Verifier and Challenge for PKCE
 const codeVerifier = "ZNLNUFZNHOKx8VYDG5cTyob0VqB6a8YFqnbNmFqq5Cw";
 const codeChallenge = "ahY8rbMTtgmDoqjTmSq1T1sUjTIEpDL7acbfoZXkVcI";
+
+// Build the Authorization URL
 app.get(`/request/login`, async (req, res) => {
 
-    // Build the Authorization URL
     // Define the Authorization Endpoint and Query Parameters
     const authorizationEndpoint = `${process.env.SSO_URL}/auth`;
     const params = {
@@ -40,6 +41,7 @@ app.get(`/request/login`, async (req, res) => {
     res.redirect(authorizationUrl);
 })
 
+// listen the callback from SSO
 app.get(`/callback`, async (req, res) => {
     if (req.query.error) {
         res.render('callback', { userinfo: req.query.error});
