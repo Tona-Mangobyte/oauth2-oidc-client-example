@@ -48,20 +48,20 @@ app.get(`/callback`, async (req, res) => {
         return;
     }
     try {
+        // Encode the concatenated string to Base64
+        const base64EncodedCredentials = Buffer.from(`${process.env.clientId}:${process.env.clientSecret}`).toString('base64');
         // Define the token endpoint and request parameters
-        const tokenEndpoint = `${process.env.SSO_URL}/token`;
         const params = new URLSearchParams({
-            client_id: process.env.clientId,
-            client_secret: process.env.clientSecret,
             code: req.query.code,
             redirect_uri: process.env.redirectUri,
             grant_type: 'authorization_code',
             code_verifier: codeVerifier,
         });
         // Make the token request using axios
-        const response = await axios.post(tokenEndpoint, params.toString(), {
+        const response = await axios.post(`${process.env.SSO_URL}/token`, params.toString(), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${base64EncodedCredentials}`,
             },
         });
 

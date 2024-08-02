@@ -30,10 +30,10 @@ app.get(`/callback`, async (req, res) => {
 ### Step 2.1: Exchange Authorization Code for Access Token
 
 ```
+    // Encode the concatenated string to Base64
+    const base64EncodedCredentials = Buffer.from(`${process.env.clientId}:${process.env.clientSecret}`).toString('base64');
     // Define the Token Endpoint and Query Parameters
     const params = {
-        client_id: process.env.clientId,
-        client_secret: process.env.clientSecret,
         redirect_uri: process.env.redirectUri,
         grant_type: 'authorization_code',
         code,
@@ -43,6 +43,7 @@ app.get(`/callback`, async (req, res) => {
     const response = await axios.post(`${process.env.SSO_URL}/token`, new URLSearchParams(params), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${base64EncodedCredentials}`,
         },
     });
     // Access Token is received
